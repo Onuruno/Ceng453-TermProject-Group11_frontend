@@ -14,10 +14,20 @@ import java.util.List;
 import java.util.Random;
 
 public class GameScreen {
-    private static StackPane root = null;
-    private static GridPane board = null;
-    private static boolean b;
+    private static StackPane root = null;   //the root
+    private static GridPane board = null;   //game board on the root
+    private static List<Card> cardList = null;  //cards on the board
 
+    private static Circle player1;  //player1's pawn
+    private static Circle player2;  //player2's pawn
+
+    /**
+     * This method creates the game board and
+     * puts it on the scene
+     *
+     * @return Scene containing
+     * cards for properties and other types.
+     */
     public static Scene createScene() {
         board= new GridPane();
         board.setAlignment(Pos.CENTER);
@@ -25,8 +35,8 @@ public class GameScreen {
         root = new StackPane();
         root.getChildren().add(board);
 
-        Circle player1 = new Circle(20, Color.BLACK);
-        Circle player2 = new Circle(20, Color.WHITE);
+        player1 = new Circle(20, Color.BLACK);
+        player2 = new Circle(20, Color.WHITE);
 
         Random rand = new Random();
         int randInt = rand.nextInt(9);
@@ -35,7 +45,7 @@ public class GameScreen {
 
         String[] colorList = {"blanchedalmond", "coral", "goldenrod", "lightgreen", "mediumpurple", "teal", "thistle", "steelblue"};
 
-        List<Card> cardList = new ArrayList<>();
+        cardList = new ArrayList<>();
         for (int i=0; i<16; i++) {
             cardList.add(new Card(""));
         }
@@ -75,10 +85,20 @@ public class GameScreen {
         player1.setTranslateX(-300);
         player1.setTranslateY(260);
 
+        root.getChildren().add(player2);
+        player2.setTranslateX(-300);
+        player2.setTranslateY(350);
+
         return new Scene(root, SceneConstants.WINDOW_WIDTH, SceneConstants.WINDOW_HEIGHT, Color.GRAY);
     }
 
-
+    /**
+     * This method creates nonProperty cards
+     * with their colors and other specs
+     *
+     * @param cardList list of cards on the board
+     * @param taxSpaceIndex Tax Space Card's index generated randomly
+     */
     private static void createNonProperties(List<Card> cardList, int taxSpaceIndex) {
         cardList.get(0).getText().setText("Start");
         cardList.get(0).setProperty(false);
@@ -119,6 +139,13 @@ public class GameScreen {
                 cardList.get(taxSpaceIndex).getText().getText() + "\n" + "-$50");
     }
 
+    /**
+     * This method gets the board and the card list and
+     * places the cards on the grid board
+     *
+     * @param board the GridPane which is board
+     * @param cardList list of cards that will be placed on the board
+     */
     private static void addCardsToBoard(GridPane board, List<Card> cardList) {
         board.add(cardList.get(0), 0,4);
         board.add(cardList.get(1), 0,3);
@@ -138,6 +165,10 @@ public class GameScreen {
         board.add(cardList.get(15), 1,4);
     }
 
+    /**
+     * This method puts the monopoly man image on middle
+     * of the board that is empty.
+     */
     private static void setMiddleImage() {
         BackgroundImage backgroundImage = new BackgroundImage(new Image(GameScreen.class.getResource("/backgroundPictures/monopoly_man.jpg").toExternalForm()),
                 BackgroundRepeat.NO_REPEAT,
