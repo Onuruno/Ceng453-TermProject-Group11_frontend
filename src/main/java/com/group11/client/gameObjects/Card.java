@@ -1,42 +1,48 @@
 package com.group11.client.gameObjects;
 
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class Card extends Rectangle {
+public class Card extends StackPane {
+
+    private Rectangle rect = new Rectangle(150,150);
+    private Text text = new Text("");
     private int value;
-    private String name;
     private boolean isProperty;
     private boolean hasBought;
 
     public Card() {
-        this.setWidth(150);
-        this.setHeight(150);
-        this.hasBought = false;
+        fixed();
     }
 
     public Card(int value) {
-        this.setWidth(150);
-        this.setHeight(150);
+        fixed();
         this.value = value;
-        this.hasBought = false;
     }
 
     public Card(String name) {
-        this.setWidth(150);
-        this.setHeight(150);
-        this.name = name;
-        this.hasBought = false;
+        fixed();
+        this.text.setText(name);
     }
 
     public Card(int value, String name) {
+        fixed();
+        this.value = value;
+        this.text.setText(name);
+    }
+
+    private void fixed() {
         this.setWidth(150);
         this.setHeight(150);
-        this.value = value;
-        this.name = name;
         this.hasBought = false;
+        this.getText().setStyle("-fx-font: 24 arial;");
+        this.getText().setTextAlignment(TextAlignment.CENTER);
+        this.getChildren().addAll(rect, text);
     }
 }
