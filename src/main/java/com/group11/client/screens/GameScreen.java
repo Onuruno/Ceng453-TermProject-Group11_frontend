@@ -1,10 +1,14 @@
 package com.group11.client.screens;
 
+import com.group11.client.constants.CardColorConstants;
 import com.group11.client.constants.SceneConstants;
 import com.group11.client.gameObjects.Card;
+
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -20,6 +24,9 @@ public class GameScreen {
 
     private static Circle player1;  //player1's pawn
     private static Circle player2;  //player2's pawn
+
+    private static int diceValue;
+    private static boolean rollingState = true;
 
     /**
      * This method creates the game board and
@@ -43,7 +50,9 @@ public class GameScreen {
         int[] taxSpaceLocations = {1,3,5,7,8,9,11,13,15};
         int taxSpaceIndex = taxSpaceLocations[randInt];
 
-        String[] colorList = {"blanchedalmond", "coral", "goldenrod", "lightgreen", "mediumpurple", "teal", "thistle", "steelblue"};
+        String[] colorList = {CardColorConstants.BLANCHEDALMOND, CardColorConstants.CORAL, CardColorConstants.GOLDENROD,
+                              CardColorConstants.LIGHTGREEN, CardColorConstants.MEDIUMPURPLE, CardColorConstants.TEAL,
+                              CardColorConstants.THISTLE, CardColorConstants.STEELBLUE};
 
         cardList = new ArrayList<>();
         for (int i=0; i<16; i++) {
@@ -59,7 +68,7 @@ public class GameScreen {
                 card.setProperty(true);
                 card.setValue(propertyValues[propertyIndex]);
                 card.getText().setText("Property " + String.valueOf(propertyIndex+1));
-                card.getRect().setStyle("-fx-fill: " + colorList[propertyIndex] + " ; -fx-stroke: black; -fx-stroke-width: 3;");
+                card.getRect().setStyle(colorList[propertyIndex]);
                 propertyIndex++;
             }
         }
@@ -75,12 +84,6 @@ public class GameScreen {
 
         setMiddleImage();
 
-        /*cardList.get(0).getChildren().add(player1);
-        cardList.get(0).setAlignment(player1, Pos.TOP_CENTER);
-
-        cardList.get(0).getChildren().add(player2);
-        cardList.get(0).setAlignment(player2, Pos.BOTTOM_CENTER);*/
-
         root.getChildren().add(player1);
         player1.setTranslateX(-300);
         player1.setTranslateY(260);
@@ -89,7 +92,40 @@ public class GameScreen {
         player2.setTranslateX(-300);
         player2.setTranslateY(350);
 
+        rollDice();
+
         return new Scene(root, SceneConstants.WINDOW_WIDTH, SceneConstants.WINDOW_HEIGHT, Color.GRAY);
+
+    }
+
+    private static void rollDice(){
+        Button rollButton = new Button("Roll");
+        rollButton.setPrefSize(100,50);
+        VBox vbox = new VBox();
+        ImageView imageView = new ImageView(new Image(GameScreen.class.getResource("/dice/1.jpg").toExternalForm(), 250, 250, true, true));
+        vbox.getChildren().add(imageView);
+        vbox.getChildren().add(rollButton);
+        vbox.setAlignment(Pos.CENTER);
+
+        rollButton.setOnAction(action -> {
+            rollButton.setDisable(true);
+
+            Random random = new Random();
+            diceValue = random.nextInt(6)+1;
+
+            for (int i = 0; i < 10; i++) {
+                diceValue = random.nextInt(6) + 1;
+                vbox.getChildren().set(0, new ImageView(new Image(
+                        GameScreen.class.getResource("/dice/" + diceValue + ".jpg").toExternalForm(), 250, 250, true, true)));
+            }
+            rollButton.setDisable(false);
+            rollButton.setText("Play");
+            rollButton.setOnAction(a -> {
+                root.getChildren().remove(vbox);
+            });
+        });
+
+        root.getChildren().add(vbox);
     }
 
     /**
@@ -102,39 +138,39 @@ public class GameScreen {
     private static void createNonProperties(List<Card> cardList, int taxSpaceIndex) {
         cardList.get(0).getText().setText("Start");
         cardList.get(0).setProperty(false);
-        cardList.get(0).getRect().setStyle("-fx-fill: pink; -fx-stroke: black; -fx-stroke-width: 3;");
+        cardList.get(0).getRect().setStyle(CardColorConstants.PINK);
 
         cardList.get(2).getText().setText("Ferry 1");
         cardList.get(2).setProperty(true);
         cardList.get(2).setValue(250);
-        cardList.get(2).getRect().setStyle("-fx-fill: deepskyblue; -fx-stroke: black; -fx-stroke-width: 3;");
+        cardList.get(2).getRect().setStyle(CardColorConstants.DEEPSKYBLUE);
 
         cardList.get(4).getText().setText("Jail");
         cardList.get(4).setProperty(false);
-        cardList.get(4).getRect().setStyle("-fx-fill: darkslateblue ; -fx-stroke: black; -fx-stroke-width: 3;");
+        cardList.get(4).getRect().setStyle(CardColorConstants.DARKSLATEBLUE);
 
         cardList.get(6).getText().setText("Ferry 2");
         cardList.get(6).setProperty(true);
         cardList.get(6).setValue(250);
-        cardList.get(6).getRect().setStyle("-fx-fill: deepskyblue; -fx-stroke: black; -fx-stroke-width: 3;");
+        cardList.get(6).getRect().setStyle(CardColorConstants.DEEPSKYBLUE);
 
         cardList.get(10).getText().setText("Ferry 3");
         cardList.get(10).setProperty(true);
         cardList.get(10).setValue(250);
-        cardList.get(10).getRect().setStyle("-fx-fill: deepskyblue; -fx-stroke: black; -fx-stroke-width: 3;");
+        cardList.get(10).getRect().setStyle(CardColorConstants.DEEPSKYBLUE);
 
         cardList.get(12).getText().setText("Go Jail");
         cardList.get(12).setProperty(false);
-        cardList.get(12).getRect().setStyle("-fx-fill: darkslateblue ; -fx-stroke: black; -fx-stroke-width: 3;");
+        cardList.get(12).getRect().setStyle(CardColorConstants.DARKSLATEBLUE);
 
         cardList.get(14).getText().setText("Ferry 4");
         cardList.get(14).setProperty(true);
         cardList.get(14).setValue(250);
-        cardList.get(14).getRect().setStyle("-fx-fill: deepskyblue; -fx-stroke: black; -fx-stroke-width: 3;");
+        cardList.get(14).getRect().setStyle(CardColorConstants.DEEPSKYBLUE);
 
         cardList.get(taxSpaceIndex).getText().setText("Tax Space");
         cardList.get(taxSpaceIndex).setProperty(false);
-        cardList.get(taxSpaceIndex).getRect().setStyle("-fx-fill: red ; -fx-stroke: black; -fx-stroke-width: 3;");
+        cardList.get(taxSpaceIndex).getRect().setStyle(CardColorConstants.RED);
         cardList.get(taxSpaceIndex).getText().setText(
                 cardList.get(taxSpaceIndex).getText().getText() + "\n" + "-$50");
     }
