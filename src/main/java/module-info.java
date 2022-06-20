@@ -16,5 +16,7 @@ module com.example.ceng453termprojectgroup11_frontend {
     exports com.group11.client;
 
     opens com.group11.client.dao to com.fasterxml.jackson.databind;
+    exports com.group11.client.enums;
+    opens com.group11.client.enums to javafx.fxml;
 
 }

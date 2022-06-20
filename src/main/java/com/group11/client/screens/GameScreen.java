@@ -2,6 +2,7 @@ package com.group11.client.screens;
 
 import com.group11.client.constants.CardColorConstants;
 import com.group11.client.constants.SceneConstants;
+import com.group11.client.enums.PropertyType;
 import com.group11.client.gameObjects.Card;
 
 import com.group11.client.gameObjects.Player;
@@ -9,7 +10,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.PathTransition;
 import javafx.animation.Timeline;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -26,6 +26,7 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class GameScreen {
     private static StackPane root = null;   //the root
@@ -112,7 +113,7 @@ public class GameScreen {
         int[] propertyValues = {100, 100, 200, 200, 300, 300, 400, 500};
         for (Card card:cardList) {
             if (card.getText().getText().isEmpty()) {
-                card.setProperty(true);
+                card.setPropertyType(PropertyType.PROPERTY);
                 card.setValue(propertyValues[propertyIndex]);
                 card.getText().setText("Property " + (propertyIndex + 1));
                 card.getRect().setStyle(colorList[propertyIndex]);
@@ -121,7 +122,7 @@ public class GameScreen {
         }
 
         for (Card card:cardList) {
-            if (card.isProperty()) {
+            if (card.getPropertyType().equals(PropertyType.PROPERTY) || card.getPropertyType().equals(PropertyType.FERRY)) {
                 String text = card.getText().getText();
                 card.getText().setText(text + "\n" + "$" + card.getValue());
             }
@@ -187,7 +188,7 @@ public class GameScreen {
 
         Random random = new Random();
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), event -> {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), event -> {
             diceValue = random.nextInt(6) + 1;
             vbox.getChildren().set(0, new ImageView(new Image(
                     GameScreen.class.getResource("/dice/" + diceValue + ".jpg").toExternalForm(), 250, 250, true, true)));
@@ -215,9 +216,6 @@ public class GameScreen {
                         player1Money.setText("$ " + player1.getMoney().toString());
 
                         makeMovement(pawn1, positions1, vbox);
-
-                        isFirstPlayerPlaying = false;
-                        //root.getChildren().remove(vbox);
                     });
                 });
             });
@@ -230,9 +228,6 @@ public class GameScreen {
                 player2Money.setText("$ " + player1.getMoney().toString());
 
                 makeMovement(pawn2, positions2, vbox);
-
-                isFirstPlayerPlaying = true;
-                //root.getChildren().remove(vbox);
             });
         }
         root.getChildren().add(vbox);
@@ -263,8 +258,17 @@ public class GameScreen {
         pathTransition.setNode(player);
         pathTransition.setPath(polyline);
         pathTransition.setOnFinished(e -> {
-                root.getChildren().remove(vbox);
-                rollDice();
+            if (currentPositionIndex+diceValue >= cardList.size()) {
+                if (isFirstPlayerPlaying) {
+                    player1.setMoney(player1.getMoney()+100);
+                    player1Money.setText("$ " + player1.getMoney().toString());
+                } else {
+                    player2.setMoney(player2.getMoney()+100);
+                    player2Money.setText("$ " + player2.getMoney().toString());
+                }
+            }
+            root.getChildren().remove(vbox);
+            afterMoveProcess((currentPositionIndex+diceValue)%cardList.size());
         });
         if (!isFirstPlayerPlaying) {
             pathTransition.setDelay(Duration.millis(1000));
@@ -292,6 +296,86 @@ public class GameScreen {
         return -1;
     }
 
+    private static void afterMoveProcess(int positionIndex) {
+        Card currentCard = cardList.get(positionIndex);
+        int propertyValue = currentCard.getValue();
+
+        if (currentCard.getPropertyType().equals(PropertyType.JAIL)) {
+            if (isFirstPlayerPlaying) {
+                player1.setInJail(true);
+            } else {
+                player2.setInJail(true);
+            }
+        } else if (currentCard.getPropertyType().equals(PropertyType.GO_JAIL)) {
+            Polyline polyline = new Polyline();
+
+            PathTransition pathTransition = new PathTransition();
+            pathTransition.setDuration(Duration.millis(3000));
+            pathTransition.setDelay(Duration.millis(1000));
+            if (isFirstPlayerPlaying) {
+                polyline.getPoints().addAll(positions1.get(12).getKey(), positions1.get(12).getValue(),
+                        positions1.get(4).getKey(), positions1.get(4).getValue());
+                pathTransition.setNode(pawn1);
+                pathTransition.setOnFinished(event -> {
+                    player1.setInJail(true);
+                    rollDice();
+                });
+            } else {
+                polyline.getPoints().addAll(positions2.get(12).getKey(), positions2.get(12).getValue(),
+                        positions2.get(4).getKey(), positions2.get(4).getValue());
+                pathTransition.setNode(pawn2);
+                pathTransition.setOnFinished(event -> {
+                    player2.setInJail(true);
+                    rollDice();
+                });
+            }
+            pathTransition.setPath(polyline);
+            pathTransition.play();
+            isFirstPlayerPlaying = !isFirstPlayerPlaying;
+            return;
+        } else if (currentCard.getPropertyType().equals(PropertyType.TAX)) {
+            if (isFirstPlayerPlaying) {
+                player1.setMoney(player1.getMoney()-50);
+                player1Money.setText("$ " + player1.getMoney().toString());
+            } else {
+                player2.setMoney(player2.getMoney()-50);
+                player2Money.setText("$ " + player2.getMoney().toString());
+            }
+        } else if (currentCard.getPropertyType().equals(PropertyType.PROPERTY) || currentCard.getPropertyType().equals(PropertyType.FERRY)) {
+            if (!currentCard.isHasBought()) {
+                //TODO
+            } else if (isFirstPlayerPlaying && player2.getPropertyList().contains(currentCard)) {
+                if (currentCard.getPropertyType().equals(PropertyType.PROPERTY)) {
+                    player1.setMoney(player1.getMoney() - propertyValue / 10);
+                    player2.setMoney(player2.getMoney() + propertyValue / 10);
+                } else {
+                    int numberOfFerries = player2.getPropertyList().stream().filter(p ->
+                            p.getPropertyType().equals(PropertyType.FERRY)).collect(Collectors.toList()).size();
+                    player1.setMoney(player1.getMoney() - (numberOfFerries * propertyValue) / 10);
+                    player2.setMoney(player2.getMoney() + (numberOfFerries * propertyValue) / 10);
+                }
+                player1Money.setText("$ " + player1.getMoney().toString());
+                player2Money.setText("$ " + player2.getMoney().toString());
+            } else if (!isFirstPlayerPlaying && player1.getPropertyList().contains(currentCard)) {
+                if (currentCard.getPropertyType().equals(PropertyType.PROPERTY)) {
+                    player1.setMoney(player1.getMoney() + propertyValue / 10);
+                    player2.setMoney(player2.getMoney() - propertyValue / 10);
+                } else {
+                    int numberOfFerries = player1.getPropertyList().stream().filter(p ->
+                            p.getPropertyType().equals(PropertyType.FERRY)).collect(Collectors.toList()).size();
+                    player1.setMoney(player1.getMoney() + (numberOfFerries * propertyValue) / 10);
+                    player2.setMoney(player2.getMoney() - (numberOfFerries * propertyValue) / 10);
+                }
+                player1Money.setText("$ " + player1.getMoney().toString());
+                player2Money.setText("$ " + player2.getMoney().toString());
+            } else {
+                //DO NOTHING
+            }
+        }
+        isFirstPlayerPlaying = !isFirstPlayerPlaying;
+        rollDice();
+    }
+
     /**
      * This method creates nonProperty cards
      * with their colors and other specs
@@ -301,39 +385,39 @@ public class GameScreen {
      */
     private static void createNonProperties(List<Card> cardList, int taxSpaceIndex) {
         cardList.get(0).getText().setText("Start");
-        cardList.get(0).setProperty(false);
+        cardList.get(0).setPropertyType(PropertyType.START);
         cardList.get(0).getRect().setStyle(CardColorConstants.PINK);
 
         cardList.get(2).getText().setText("Ferry 1");
-        cardList.get(2).setProperty(true);
+        cardList.get(2).setPropertyType(PropertyType.FERRY);
         cardList.get(2).setValue(250);
         cardList.get(2).getRect().setStyle(CardColorConstants.DEEPSKYBLUE);
 
         cardList.get(4).getText().setText("Jail");
-        cardList.get(4).setProperty(false);
+        cardList.get(4).setPropertyType(PropertyType.JAIL);
         cardList.get(4).getRect().setStyle(CardColorConstants.DARKSLATEBLUE);
 
         cardList.get(6).getText().setText("Ferry 2");
-        cardList.get(6).setProperty(true);
+        cardList.get(6).setPropertyType(PropertyType.FERRY);
         cardList.get(6).setValue(250);
         cardList.get(6).getRect().setStyle(CardColorConstants.DEEPSKYBLUE);
 
         cardList.get(10).getText().setText("Ferry 3");
-        cardList.get(10).setProperty(true);
+        cardList.get(10).setPropertyType(PropertyType.FERRY);
         cardList.get(10).setValue(250);
         cardList.get(10).getRect().setStyle(CardColorConstants.DEEPSKYBLUE);
 
         cardList.get(12).getText().setText("Go Jail");
-        cardList.get(12).setProperty(false);
+        cardList.get(12).setPropertyType(PropertyType.GO_JAIL);
         cardList.get(12).getRect().setStyle(CardColorConstants.DARKSLATEBLUE);
 
         cardList.get(14).getText().setText("Ferry 4");
-        cardList.get(14).setProperty(true);
+        cardList.get(14).setPropertyType(PropertyType.FERRY);
         cardList.get(14).setValue(250);
         cardList.get(14).getRect().setStyle(CardColorConstants.DEEPSKYBLUE);
 
         cardList.get(taxSpaceIndex).getText().setText("Tax Space");
-        cardList.get(taxSpaceIndex).setProperty(false);
+        cardList.get(taxSpaceIndex).setPropertyType(PropertyType.TAX);
         cardList.get(taxSpaceIndex).getRect().setStyle(CardColorConstants.RED);
         cardList.get(taxSpaceIndex).getText().setText(
                 cardList.get(taxSpaceIndex).getText().getText() + "\n" + "-$50");

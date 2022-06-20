@@ -10,9 +10,11 @@ import java.util.List;
 @Setter
 public class Player {
     private Integer money;
-    private List<Card> propertList = new ArrayList<>();
+    private List<Card> propertyList = new ArrayList<>();
+    private boolean isInJail;
 
     public Player() {
         this.setMoney(1500);
+        this.setInJail(false);
     }
 }

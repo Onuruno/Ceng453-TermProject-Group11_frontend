@@ -1,5 +1,6 @@
 package com.group11.client.gameObjects;
 
+import com.group11.client.enums.PropertyType;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -14,8 +15,8 @@ public class Card extends StackPane {
     private Rectangle rect = new Rectangle(150,150);
     private Text text = new Text("");
     private int value;
-    private boolean isProperty;
     private boolean hasBought;
+    private PropertyType propertyType;
 
     public Card() {
         fixed();
