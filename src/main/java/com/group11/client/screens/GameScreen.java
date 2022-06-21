@@ -345,6 +345,15 @@ public class GameScreen {
         root.getChildren().add(vbox);
     }
 
+    /**
+     * This method moves player to jail after it
+     * rolls third consecutive dice with value of 6.
+     *
+     * @param pawn Player's pawn
+     * @param player Player's itself
+     * @param positions Possible positions of player on the board
+     * @param vbox Vbox that contains Dice view
+     */
     private static void thirdSix(Circle pawn, Player player, List<Pair<Double, Double>> positions, VBox vbox) {
         int currentPositionIndex = getPositionIndex(pawn, positions);
 
@@ -428,6 +437,12 @@ public class GameScreen {
         return -1;
     }
 
+    /**
+     * This method checks all possibilities after moving a
+     * new board position.
+     *
+     * @param positionIndex Player's position on the board
+     */
     private static void afterMoveProcess(int positionIndex) {
         Card currentCard = cardList.get(positionIndex);
         int propertyValue = currentCard.getValue();
@@ -467,11 +482,15 @@ public class GameScreen {
             return;
         } else if (currentCard.getPropertyType().equals(PropertyType.TAX)) {
             if (isFirstPlayerPlaying) {
-                //BANKRUPTCY CHECK
+                if (player1.getMoney() < 50) {
+                    endGame();
+                }
                 player1.setMoney(player1.getMoney()-50);
                 player1Money.setText("$ " + player1.getMoney().toString());
             } else {
-                //BANKRUPTCY CHECK
+                if (player2.getMoney() < 50) {
+                    endGame();
+                }
                 player2.setMoney(player2.getMoney()-50);
                 player2Money.setText("$ " + player2.getMoney().toString());
             }
@@ -528,13 +547,17 @@ public class GameScreen {
                 }
             } else if (isFirstPlayerPlaying && player2.getPropertyList().contains(currentCard)) {
                 if (currentCard.getPropertyType().equals(PropertyType.PROPERTY)) {
-                    //BANKRUPTCY CHECK
+                    if (player1.getMoney() < (propertyValue / 10)) {
+                        endGame();
+                    }
                     player1.setMoney(player1.getMoney() - propertyValue / 10);
                     player2.setMoney(player2.getMoney() + propertyValue / 10);
                 } else {
-                    //BANKRUPTCY CHECK
                     int numberOfFerries = player2.getPropertyList().stream().filter(p ->
                             p.getPropertyType().equals(PropertyType.FERRY)).collect(Collectors.toList()).size();
+                    if (player1.getMoney() < ((numberOfFerries * propertyValue) / 10)) {
+                        endGame();
+                    }
                     player1.setMoney(player1.getMoney() - (numberOfFerries * propertyValue) / 10);
                     player2.setMoney(player2.getMoney() + (numberOfFerries * propertyValue) / 10);
                 }
@@ -542,13 +565,17 @@ public class GameScreen {
                 player2Money.setText("$ " + player2.getMoney().toString());
             } else if (!isFirstPlayerPlaying && player1.getPropertyList().contains(currentCard)) {
                 if (currentCard.getPropertyType().equals(PropertyType.PROPERTY)) {
-                    //BANKRUPTCY CHECK
+                    if (player2.getMoney() < (propertyValue / 10)) {
+                        endGame();
+                    }
                     player1.setMoney(player1.getMoney() + propertyValue / 10);
                     player2.setMoney(player2.getMoney() - propertyValue / 10);
                 } else {
-                    //BANKRUPTCY CHECK
                     int numberOfFerries = player1.getPropertyList().stream().filter(p ->
                             p.getPropertyType().equals(PropertyType.FERRY)).collect(Collectors.toList()).size();
+                    if (player2.getMoney() < ((numberOfFerries * propertyValue) / 10)) {
+                        endGame();
+                    }
                     player1.setMoney(player1.getMoney() + (numberOfFerries * propertyValue) / 10);
                     player2.setMoney(player2.getMoney() - (numberOfFerries * propertyValue) / 10);
                 }
@@ -559,6 +586,10 @@ public class GameScreen {
         diceCheckAndContinue();
     }
 
+    /**
+     * This method checks whether last rolled dice
+     * is 6 in order to double rolling rule.
+     */
     private static void diceCheckAndContinue() {
         if (diceValue != 6) {
             if (isFirstPlayerPlaying) {
@@ -575,6 +606,10 @@ public class GameScreen {
             }
         }
         rollDice();
+    }
+
+    private static void endGame() {
+
     }
 
     /**
