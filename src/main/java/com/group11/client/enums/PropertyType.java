@@ -1,20 +1,20 @@
 package com.group11.client.enums;
 
 public enum PropertyType {
-    START(1),
-    JAIL(2),
-    GO_JAIL(3),
-    TAX(4),
-    FERRY(5),
-    PROPERTY(6);
+    START("Start"),
+    JAIL("Jail"),
+    GO_JAIL("GoJail"),
+    TAX("Tax"),
+    FERRY("Ferry"),
+    PROPERTY("Property");
 
-    private final int propertyTypeId;
+    private final String propertyTypeId;
 
-    PropertyType(final int propertyTypeId) {
+    PropertyType(final String propertyTypeId) {
         this.propertyTypeId = propertyTypeId;
     }
 
-    public int getPropertyTypeId() {
+    public String getPropertyTypeId() {
         return propertyTypeId;
     }
 }

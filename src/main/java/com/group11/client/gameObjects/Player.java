@@ -11,10 +11,28 @@ import java.util.List;
 public class Player {
     private Integer money;
     private List<Card> propertyList = new ArrayList<>();
-    private boolean isInJail;
+    private int jailValue;
+    private int sixDice;
 
     public Player() {
         this.setMoney(1500);
-        this.setInJail(false);
+        this.setJailValue(0);
+        this.setSixDice(3);
+    }
+
+    public void sendJail() {
+        this.jailValue = 2;
+    }
+
+    public void decreaseJail() {
+        this.jailValue--;
+    }
+
+    public void decreaseSixDice() {
+        this.sixDice--;
+    }
+
+    public void resetSixDice() {
+        this.setSixDice(3);
     }
 }
