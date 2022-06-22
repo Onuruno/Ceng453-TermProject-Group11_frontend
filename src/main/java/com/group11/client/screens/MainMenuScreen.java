@@ -22,7 +22,6 @@ public class MainMenuScreen {
         root = new GridPane();
 
         root.setAlignment(Pos.TOP_LEFT);
-
         root.setVgap(10);
         root.setHgap(10);
         root.setPadding(new Insets(25, 25, 25, 25));

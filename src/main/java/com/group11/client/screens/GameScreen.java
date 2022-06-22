@@ -16,6 +16,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -75,7 +77,21 @@ public class GameScreen {
 
         rollDice();
 
-        return new Scene(root, SceneConstants.WINDOW_WIDTH, SceneConstants.WINDOW_HEIGHT, Color.GRAY);
+        return setCheat();
+    }
+
+    /**
+     * This method creates final scene and adds
+     * a cheat to it.
+     */
+    public static Scene setCheat() {
+        Scene scene = new Scene(root, SceneConstants.WINDOW_WIDTH, SceneConstants.WINDOW_HEIGHT, Color.GRAY);
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
+            if ((event.getCode() == KeyCode.DIGIT9 || event.getCode() == KeyCode.NUMPAD9) && event.isControlDown()) {
+                endGame();
+            }
+        });
+        return scene;
     }
 
     /**
@@ -124,9 +140,9 @@ public class GameScreen {
         int[] taxSpaceLocations = {1,3,5,7,8,9,11,13,15};
         int taxSpaceIndex = taxSpaceLocations[randInt];
 
-        String[] colorList = {CardColorConstants.BLANCHEDALMOND, CardColorConstants.BLANCHEDALMOND, CardColorConstants.LIGHTGREEN,
-                CardColorConstants.LIGHTGREEN, CardColorConstants.TEAL, CardColorConstants.TEAL,
-                CardColorConstants.THISTLE, CardColorConstants.STEELBLUE};
+        String[] colorList = {CardColorConstants.BLANCHEDALMOND, CardColorConstants.BLANCHEDALMOND,
+                CardColorConstants.LIGHTGREEN, CardColorConstants.LIGHTGREEN, CardColorConstants.TEAL,
+                CardColorConstants.TEAL, CardColorConstants.THISTLE, CardColorConstants.STEELBLUE};
 
         cardList = new ArrayList<>();
         for (int i=0; i<16; i++) {
@@ -608,8 +624,11 @@ public class GameScreen {
         rollDice();
     }
 
+    /**
+     * This method sets the scene as EndGameScreen.
+     */
     private static void endGame() {
-
+        EndGameScreen.createScene(player1);
     }
 
     /**

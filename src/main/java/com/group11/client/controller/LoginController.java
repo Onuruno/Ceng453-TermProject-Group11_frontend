@@ -25,6 +25,7 @@ public class LoginController {
                     .body("{\"username\":\"" + username + "\", \"password\":\"" + password + "\"}")
                     .asString();
             if (response.getStatus() == 200) {
+                setUserId(username);
                 GameConstants.username = username;
                 NetworkConstants.jwtToken = response.getBody();
                 SceneConstants.stage.setScene(MainMenuScreen.createScene());
@@ -37,5 +38,19 @@ public class LoginController {
             return e.getMessage();
         }
 
+    }
+
+    private void setUserId(String username) {
+        try {
+            HttpResponse<String> response = Unirest
+                    .get(NetworkConstants.API + "api/getPlayerID" + "?username=" + username)
+                    .header("Content-Type", "application/json")
+                    .asString();
+            if (response.getStatus() == 200) {
+                GameConstants.UserId = Long.valueOf(response.getBody());
+            }
+            else {
+            }
+        } catch (Exception e) {}
     }
 }
