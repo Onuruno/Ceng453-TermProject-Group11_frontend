@@ -40,6 +40,10 @@ public class LoginController {
 
     }
 
+    /**
+     * This method sends a get request and sets the userId of current user
+     * @param username username of current user
+     */
     private void setUserId(String username) {
         try {
             HttpResponse<String> response = Unirest

@@ -7,10 +7,7 @@ import com.group11.client.controller.RegisterController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -38,7 +35,6 @@ public class AuthenticationScreen {
         root = new GridPane();
 
         root.setAlignment(Pos.TOP_LEFT);
-
         root.setVgap(10);
         root.setHgap(10);
         root.setPadding(new Insets(25, 25, 25, 25));
@@ -89,11 +85,20 @@ public class AuthenticationScreen {
 
         root.add(hBoxButtons, 1, 3);
 
+        Hyperlink hyperlink = new Hyperlink("Forgot password?");
+        hyperlink.setTextFill(Color.BLACK);
+
+        root.add(hyperlink, 1, 4);
+
         Text errorMessage = new Text();
         errorMessage.setWrappingWidth(SceneConstants.LOGIN_WINDOW_WIDTH / 4.0);
         errorMessage.setFill(Color.BLACK);
         errorMessage.setTextAlignment(CENTER);
-        root.add(errorMessage, 1, 4);
+        root.add(errorMessage, 1, 5);
+
+        hyperlink.setOnAction(event -> {
+            SceneConstants.stage.setScene(PasswordResetScreen.createScene());
+        });
 
         loginButton.setOnAction(a -> {
             if (isLoginState) { /* In Login State Login Pressed */
@@ -117,9 +122,8 @@ public class AuthenticationScreen {
                 root.getChildren().remove(email);
                 root.getChildren().remove(emailTextField);
                 root.getChildren().remove(hBoxButtons);
-                root.getChildren().remove(errorMessage);
                 root.add(hBoxButtons, 1, 3);
-                root.add(errorMessage, 1, 4);
+                root.add(hyperlink, 1, 4);
 
                 errorMessage.setText("");
             }
@@ -134,11 +138,10 @@ public class AuthenticationScreen {
                 loginButton.setText("Back");
 
                 root.getChildren().remove(hBoxButtons);
-                root.getChildren().remove(errorMessage);
                 root.add(email, 0, 3);
                 root.add(emailTextField, 1, 3);
                 root.add(hBoxButtons, 1, 4);
-                root.add(errorMessage, 1, 5);
+                root.getChildren().remove(hyperlink);
 
                 errorMessage.setText("");
             }

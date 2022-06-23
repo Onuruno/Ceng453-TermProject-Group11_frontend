@@ -19,7 +19,7 @@ public class RegisterController {
                     = Unirest.post(NetworkConstants.API + "api/register")
                     .header("Content-Type", "application/json")
                     .body("{\"username\":\"" + username + "\", \"password\":\"" +
-                            password + "\", \"email:\":\"" + email + "\"" + "}")
+                            password + "\", \"email\":\"" + email + "\"" + "}")
                     .asString();
             if (response.getStatus() == 200) {
                 return "";
