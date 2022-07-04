@@ -1,6 +1,7 @@
 package com.group11.client.screens;
 
 import com.group11.client.constants.ErrorConstants;
+import com.group11.client.constants.NetworkConstants;
 import com.group11.client.constants.SceneConstants;
 import com.group11.client.controller.LoginController;
 import com.group11.client.controller.RegisterController;
@@ -149,7 +150,7 @@ public class AuthenticationScreen {
             else if (!userNameTextField.getText().isEmpty() && !passwordField.getText().isEmpty()) {
                 String response = registerController.register(userNameTextField.getText(), passwordField.getText(), emailTextField.getText());
                 if (response.isEmpty()) {
-                    errorMessage.setText("You are registered. Please log in.");
+                    errorMessage.setText(NetworkConstants.REGISTERED);
                 } else {
                     errorMessage.setText(response);
                 }
