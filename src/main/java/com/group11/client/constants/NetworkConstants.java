@@ -6,6 +6,8 @@ public class NetworkConstants {
     public static final String WEEKLY = "weekly";
 
     public static final String MONTHLY = "monthly";
+
+    public static final String SUCCESSFUL_RESET = "Player is updated successfully.";
     public static String jwtToken;
 
 }

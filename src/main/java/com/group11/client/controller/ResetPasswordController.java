@@ -48,10 +48,10 @@ public class ResetPasswordController {
                     .body("{\"username\":\"" + username + "\", " +
                             "\"password\":\"" + password + "\", " +
                             "\"email\":\"" + email + "\", " +
-                            "\"resetPasswordToken\":\"" + code +"}")
+                            "\"resetPasswordToken\":\"" + code + "\"" +"}")
                     .asString();
             if (response.getStatus() == 200) {
-                return "";
+                return NetworkConstants.SUCCESSFUL_RESET;
             } else {
                 return response.getBody();
             }

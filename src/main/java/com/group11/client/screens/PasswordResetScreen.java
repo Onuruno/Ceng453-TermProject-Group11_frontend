@@ -1,5 +1,6 @@
 package com.group11.client.screens;
 
+import com.group11.client.constants.NetworkConstants;
 import com.group11.client.constants.SceneConstants;
 import com.group11.client.controller.ResetPasswordController;
 import javafx.geometry.Insets;
@@ -7,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -60,7 +62,7 @@ public class PasswordResetScreen {
         password.setTextFill(Color.BLACK);
         password.setPadding(new Insets(0, 0, 0, 20));
 
-        TextField passwordField = new TextField();
+        PasswordField passwordField = new PasswordField();
 
         Label code = new Label("Code Sent");
         code.setFont(Font.font("Verdana", 15));
@@ -94,7 +96,9 @@ public class PasswordResetScreen {
                     && !passwordField.getText().isEmpty() && !codeField.getText().isEmpty()) {
                 String response = controller.savePassword(userNameTextField.getText(), passwordField.getText(),
                         emailTextField.getText(), codeField.getText());
-                System.out.println(response);
+                if (response.equals(NetworkConstants.SUCCESSFUL_RESET)) {
+                    backButton.fire();
+                }
             }
         });
 
