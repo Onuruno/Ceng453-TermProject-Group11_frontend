@@ -19,7 +19,7 @@ public class ResetPasswordController {
             HttpResponse<String> response
                     = Unirest.post(NetworkConstants.API + "api/forgotpassword")
                     .header("Content-Type", "application/json")
-                    .body("{\"username\":\"" + username + "\", \"email:\":\"" + email + "\"" + "}")
+                    .body("{\"username\":\"" + username + "\", \"email\":\"" + email + "\"" + "}")
                     .asString();
             if (response.getStatus() == 200) {
                 return "";

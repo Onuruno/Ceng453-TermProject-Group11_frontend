@@ -1,5 +1,6 @@
 package com.group11.client.screens;
 
+import com.group11.client.constants.GameConstants;
 import com.group11.client.constants.SceneConstants;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -34,12 +35,17 @@ public class MainMenuScreen {
         leaderboardButton.setStyle("-fx-font-size: 15pt;");
         leaderboardButton.setMaxSize(250,100);
 
+        Button logoutButton = new Button("Logout");
+        logoutButton.setStyle("-fx-font-size: 15pt;");
+        logoutButton.setMaxSize(150, 50);
+
         VBox vBoxButtons = new VBox(15);
         vBoxButtons.setAlignment(Pos.CENTER);
         vBoxButtons.getChildren().add(newGameButton);
         vBoxButtons.getChildren().add(leaderboardButton);
 
         root.add(vBoxButtons, 1,0);
+        root.add(logoutButton, 1, 50);
 
         leaderboardButton.setOnAction(a -> {
             SceneConstants.stage.setScene(LeaderBoardScreen.createScene());
@@ -47,6 +53,10 @@ public class MainMenuScreen {
 
         newGameButton.setOnAction(a -> {
             SceneConstants.stage.setScene(GameScreen.createScene());
+        });
+
+        logoutButton.setOnAction(a -> {
+            SceneConstants.stage.setScene(AuthenticationScreen.createScene());
         });
 
         setBackground();
