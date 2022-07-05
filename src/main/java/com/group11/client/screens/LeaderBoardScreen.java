@@ -113,6 +113,7 @@ public class LeaderBoardScreen {
 
             Label usernameLabel = new Label(record.getUsername());
             usernameLabel.setFont(Font.font("Verdana", 20));
+            usernameLabel.setPrefWidth(150);
 
             Label scoreLabel = new Label(record.getScore().toString());
             scoreLabel.setFont(Font.font("Verdana", 20));
